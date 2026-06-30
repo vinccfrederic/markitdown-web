@@ -1,2 +1,2 @@
 flask
-markitdown
+markitdown[all]
