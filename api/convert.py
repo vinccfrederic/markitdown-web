@@ -3,6 +3,8 @@ import tempfile
 from flask import Flask, request, Response
 from markitdown import MarkItDown
 
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 app = Flask(__name__)
 
 CORS_HEADERS = {
@@ -13,6 +15,12 @@ CORS_HEADERS = {
 
 MAX_SIZE_MB = 50
 MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
+
+
+@app.route("/", methods=["GET"])
+def index():
+    with open(os.path.join(ROOT, "index.html")) as f:
+        return Response(f.read(), mimetype="text/html")
 
 
 @app.route("/api/convert", methods=["POST", "OPTIONS"])
