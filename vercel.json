@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "functions": {
+    "api/convert.py": {
+      "runtime": "python3.12",
+      "maxDuration": 30
+    }
+  },
+  "routes": [
+    { "src": "/api/convert", "dest": "/api/convert.py" },
+    { "src": "/(.*)",        "dest": "/$1" }
+  ]
+}
