@@ -1,2 +1,2 @@
 flask
-markitdown[all]
+markitdown[pdf,docx,pptx,xlsx]
