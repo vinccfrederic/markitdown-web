@@ -215,8 +215,9 @@
       color: var(--muted);
       text-align: center;
     }
-    footer a { color: var(--muted); text-decoration: none; }
-    footer a:hover { color: var(--text); }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { color: var(--accent2); }
+    .hi { color: var(--accent); font-weight: 600; }
 
     /* ── Progress bar inside drop zone ── */
     #prog-bar {
@@ -234,10 +235,10 @@
 
 <header>
   <div class="logo">Mark<em>ItDown</em></div>
-  <p class="tagline">Convert any file to Markdown — powered by Microsoft's markitdown</p>
+  <p class="tagline">Convert any file to Markdown — powered by Microsoft's <span class="hi">markitdown</span></p>
   <div class="pill">
     <span class="dot"></span>
-    Your file is processed in memory and never stored
+    Your file is processed in memory and <span class="hi">never stored</span>
   </div>
 </header>
 
@@ -248,7 +249,7 @@
     <div id="prog-bar"></div>
     <div class="icon">📄</div>
     <h2>Drop a file or click to browse</h2>
-    <p>Supports PDF, Word, Excel, PowerPoint, HTML, CSV, JSON, XML, ZIP and more</p>
+    <p>Supports <span class="hi">PDF, Word, Excel, PowerPoint</span>, HTML, CSV, JSON, XML, ZIP and more</p>
     <div class="tags">
       <span class="tag">.pdf</span>
       <span class="tag">.docx</span>
