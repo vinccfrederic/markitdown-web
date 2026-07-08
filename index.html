@@ -8,16 +8,16 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:      #0d0d12;
-      --surface: #13131a;
-      --border:  #222232;
-      --border2: #2c2c42;
-      --accent:  #6c63ff;
-      --accent2: #9d97ff;
-      --text:    #e2e2f0;
-      --muted:   #5a5a7a;
-      --success: #3ecf7a;
-      --error:   #f06060;
+      --bg:      #F5F0E8;
+      --surface: #FDFAF4;
+      --border:  #DDD5C4;
+      --border2: #C9BEA8;
+      --accent:  #6B8C6B;
+      --accent2: #4A6B4A;
+      --text:    #3A3228;
+      --muted:   #8C7E6E;
+      --success: #5A8A5A;
+      --error:   #B85040;
     }
 
     body {
@@ -105,7 +105,7 @@
     #drop-zone h2 {
       font-size: 1rem;
       font-weight: 600;
-      color: #ccc;
+      color: var(--text);
       margin-bottom: 5px;
     }
     #drop-zone p { font-size: 0.82rem; color: var(--muted); }
@@ -141,8 +141,8 @@
       font-size: 0.86rem;
       color: #bbb;
     }
-    .status-box.err  { border-color: #5a1e1e; background: #160a0a; color: var(--error); }
-    .status-box.ok   { border-color: #1a4a30; background: #0a1610; color: var(--success); }
+    .status-box.err  { border-color: #C9A090; background: #F9EDE8; color: var(--error); }
+    .status-box.ok   { border-color: #A0C4A0; background: #EDF4ED; color: var(--success); }
 
     .spin {
       width: 18px; height: 18px; flex-shrink: 0;
@@ -162,18 +162,18 @@
       align-items: baseline;
       margin-bottom: 10px;
     }
-    .result-name { font-weight: 600; font-size: 0.9rem; color: #ddd; }
+    .result-name { font-weight: 600; font-size: 0.9rem; color: var(--text); }
     .result-size { font-size: 0.78rem; color: var(--muted); }
 
     #preview {
-      background: #09090f;
+      background: #EDE6D8;
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 16px;
       font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
       font-size: 0.77rem;
       line-height: 1.65;
-      color: #9d9dbb;
+      color: #5C4F42;
       white-space: pre-wrap;
       word-break: break-word;
       max-height: 280px;
@@ -212,11 +212,11 @@
     footer {
       margin-top: 36px;
       font-size: 0.75rem;
-      color: #3a3a55;
+      color: var(--muted);
       text-align: center;
     }
-    footer a { color: #555; text-decoration: none; }
-    footer a:hover { color: #888; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--text); }
 
     /* ── Progress bar inside drop zone ── */
     #prog-bar {
