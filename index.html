@@ -372,7 +372,14 @@ function fmtSize(bytes) {
 }
 
 // ── Core conversion ──────────────────────────────────────────────────────
+const MAX_SIZE_MB = 50;
+
 async function handleFile(file) {
+  if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+    setStatus(`File too large — max ${MAX_SIZE_MB} MB (this file is ${fmtSize(file.size)}).`, 'err');
+    return;
+  }
+
   currentName = file.name.replace(/\.[^.]+$/, '') + '.md';
   setStatus(`Converting "${file.name}"…`);
   progBar.style.width = '30%';

@@ -1,11 +1,23 @@
 import os
+import logging
 import tempfile
-from flask import Flask, request, Response
+from flask import Flask, request, Response, jsonify
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from markitdown import MarkItDown
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 app = Flask(__name__)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=[],
+    storage_uri="memory://",
+)
 
 CORS_HEADERS = {
     "Access-Control-Allow-Origin": "*",
@@ -16,6 +28,28 @@ CORS_HEADERS = {
 MAX_SIZE_MB = 50
 MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
 
+md = MarkItDown()
+
+ALLOWED_EXTENSIONS = {
+    ".pdf", ".docx", ".pptx", ".xlsx",
+    ".html", ".htm", ".csv", ".json",
+    ".xml", ".txt", ".zip", ".md",
+}
+
+
+@app.errorhandler(429)
+def rate_limit_handler(e):
+    return Response(
+        "Too many requests — please wait a moment before converting again.",
+        status=429,
+        headers=CORS_HEADERS,
+    )
+
+
+@app.route("/health", methods=["GET"])
+def health():
+    return Response("ok", status=200)
+
 
 @app.route("/", methods=["GET"])
 def index():
@@ -25,6 +59,7 @@ def index():
 
 @app.route("/api/convert", methods=["POST", "OPTIONS"])
 @app.route("/", methods=["POST", "OPTIONS"])
+@limiter.limit("10 per minute", error_message="Too many requests — please wait a moment before converting again.")
 def convert():
     # CORS preflight
     if request.method == "OPTIONS":
@@ -43,9 +78,16 @@ def convert():
             f"File too large (max {MAX_SIZE_MB} MB).", status=413, headers=CORS_HEADERS
         )
 
-    # Preserve original extension so markitdown can detect the type
+    # Sanitize: extract only the extension, ignore the rest of the filename
     _, ext = os.path.splitext(file.filename)
-    ext = ext.lower() or ".bin"
+    ext = ext.lower()
+
+    if not ext or ext not in ALLOWED_EXTENSIONS:
+        return Response(
+            f"Unsupported file type '{ext or '(none)'}'. Allowed: {', '.join(sorted(ALLOWED_EXTENSIONS))}",
+            status=415,
+            headers=CORS_HEADERS,
+        )
 
     tmp_path = None
     try:
@@ -53,8 +95,7 @@ def convert():
             tmp_path = tmp.name
             file.save(tmp)
 
-        mid = MarkItDown()
-        result = mid.convert(tmp_path)
+        result = md.convert(tmp_path)
         md_text = result.text_content or ""
 
         if not md_text.strip():
@@ -72,7 +113,12 @@ def convert():
         )
 
     except Exception as exc:
-        return Response(f"Conversion error: {exc}", status=500, headers=CORS_HEADERS)
+        logger.error("Conversion failed for file '%s': %s", file.filename, exc, exc_info=True)
+        return Response(
+            "Conversion failed. The file may be corrupted or unsupported.",
+            status=500,
+            headers=CORS_HEADERS,
+        )
 
     finally:
         # Always delete the temp file — nothing persists
