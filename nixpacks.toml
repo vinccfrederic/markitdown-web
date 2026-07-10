@@ -1,2 +1,3 @@
 [phases.setup]
 nixPkgs = ["tesseract"]
+aptPkgs = ["libheif-dev", "libde265-dev"]

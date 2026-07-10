@@ -7,7 +7,7 @@ from flask_limiter.util import get_remote_address
 from markitdown import MarkItDown
 import pytesseract
 from PIL import Image
-import av
+import pyheif
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -169,11 +169,17 @@ def ocr():
             tmp_path = tmp.name
             file.save(tmp)
 
-        # HEIC/HEIF: decode via PyAV (bundles its own ffmpeg, no system dep)
+        # HEIC/HEIF: decode via pyheif + system libde265 (HEVC decoder)
         if ext in (".heic", ".heif"):
-            with av.open(tmp_path) as container:
-                frame = next(container.decode(video=0))
-                image = frame.to_image()
+            heif_file = pyheif.read(tmp_path)
+            image = Image.frombytes(
+                heif_file.mode,
+                heif_file.size,
+                heif_file.data,
+                "raw",
+                heif_file.mode,
+                heif_file.stride,
+            )
         else:
             image = Image.open(tmp_path)
         text = pytesseract.image_to_string(image)

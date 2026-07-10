@@ -7,4 +7,4 @@ python-pptx==1.0.2
 openpyxl==3.1.5
 pytesseract==0.3.13
 Pillow==11.2.1
-av==14.3.0
+pyheif==0.8.0
