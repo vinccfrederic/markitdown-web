@@ -176,7 +176,7 @@ def ocr():
         if ext in (".heic", ".heif"):
             ffmpeg = shutil.which("ffmpeg")
             if not ffmpeg:
-                raise RuntimeError("ffmpeg not available on this server")
+                raise RuntimeError(f"ffmpeg not found. PATH={os.environ.get('PATH','')}")
             png_path = tmp_path + ".png"
             result = subprocess.run(
                 [ffmpeg, "-y", "-i", tmp_path, png_path],
