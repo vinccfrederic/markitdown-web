@@ -7,6 +7,8 @@ from flask_limiter.util import get_remote_address
 from markitdown import MarkItDown
 import pytesseract
 from PIL import Image
+from pillow_heif import register_heif_opener
+register_heif_opener()
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -40,6 +42,7 @@ ALLOWED_EXTENSIONS = {
 
 ALLOWED_IMAGE_EXTENSIONS = {
     ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".tif", ".webp",
+    ".heic", ".heif",
 }
 
 
