@@ -17,20 +17,10 @@ def _find_tesseract():
     t = shutil.which("tesseract")
     if t:
         return t
-    for pattern in [
-        "/nix/store/*/bin/tesseract",
-        "/root/.local/share/mise/installs/*/*/bin/tesseract",
-        "/home/*/.local/share/mise/installs/*/*/bin/tesseract",
-    ]:
-        hits = glob.glob(pattern)
-        if hits:
-            return hits[0]
-    for p in ("/usr/bin/tesseract", "/usr/local/bin/tesseract", "/app/bin/tesseract"):
+    for p in ("/usr/bin/tesseract", "/usr/local/bin/tesseract"):
         if os.path.exists(p):
             return p
-    nix = glob.glob("/nix/store/*/bin/tesseract")
-    mise = glob.glob("/root/.local/share/mise/installs/*/*/bin/tesseract")
-    return f"NOT_FOUND|nix={nix}|mise={mise}|PATH={os.environ.get('PATH','')}"
+    return "tesseract"
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
