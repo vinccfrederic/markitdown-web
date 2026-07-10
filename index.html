@@ -228,9 +228,47 @@
     }
     .btn-sec:hover { color: var(--text); border-color: var(--border2); }
 
+    /* ── Privacy section ── */
+    .privacy {
+      width: 100%;
+      max-width: 620px;
+      margin-top: 20px;
+      background: #EDF4ED;
+      border: 1px solid #A0C4A0;
+      border-radius: 14px;
+      padding: 20px 24px;
+    }
+    .privacy-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--success);
+      margin-bottom: 12px;
+    }
+    .privacy-items {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .privacy-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.82rem;
+      color: var(--text);
+      line-height: 1.4;
+    }
+    .privacy-item .check {
+      color: var(--success);
+      font-size: 0.9rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
     /* ── Footer ── */
     footer {
-      margin-top: 36px;
+      margin-top: 28px;
       font-size: 0.75rem;
       color: var(--muted);
       text-align: center;
@@ -253,7 +291,7 @@
 
 <header>
   <div class="logo">File<em>Forge</em></div>
-  <p class="tagline">Drop any file — we'll figure out the rest</p>
+  <p class="tagline">Drop any file — everything comes out as <span class="hi">Markdown</span></p>
   <div class="pill">
     <span class="dot"></span>
     Processed in memory · <span class="hi">never stored</span>
@@ -267,7 +305,7 @@
     <div id="prog-bar"></div>
     <div class="icon" id="drop-icon">📂</div>
     <h2>Drop a file or click to browse</h2>
-    <p>Documents are converted to <span class="hi">Markdown</span> · Images have their text <span class="hi">extracted</span></p>
+    <p>Documents and images — both converted to <span class="hi">Markdown</span></p>
     <div class="modes">
       <div class="mode-badge"><span>📄</span> PDF, Word, Excel, PowerPoint…</div>
       <div class="mode-badge"><span>📷</span> Photos, screenshots, HEIC…</div>
@@ -309,8 +347,17 @@
 
 </div>
 
+<div class="privacy">
+  <div class="privacy-title">🔒 Your privacy, guaranteed</div>
+  <div class="privacy-items">
+    <div class="privacy-item"><span class="check">✓</span> <span>Your file is sent over HTTPS and processed immediately — it is <strong>never written to a database</strong> or permanent storage.</span></div>
+    <div class="privacy-item"><span class="check">✓</span> <span>A temporary file is created on the server only for the duration of conversion, then <strong>deleted immediately</strong> — even if something goes wrong.</span></div>
+    <div class="privacy-item"><span class="check">✓</span> <span>No tracking, no analytics, no logs of your file contents. <strong>Nothing is retained</strong> after your Markdown is returned.</span></div>
+  </div>
+</div>
+
 <footer>
-  Zero storage · Zero tracking · Your files never leave your device
+  Zero storage · Zero tracking · Nothing retained
 </footer>
 
 <script>
