@@ -25,14 +25,14 @@ def _find_tesseract():
             return p
     return "tesseract"  # last resort
 
-pytesseract.pytesseract.tesseract_cmd = _find_tesseract()
-logger.info("tesseract cmd: %s", pytesseract.pytesseract.tesseract_cmd)
-
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+pytesseract.pytesseract.tesseract_cmd = _find_tesseract()
+logger.info("tesseract cmd: %s", pytesseract.pytesseract.tesseract_cmd)
 
 limiter = Limiter(
     get_remote_address,
