@@ -110,12 +110,32 @@
     }
     #drop-zone p { font-size: 0.82rem; color: var(--muted); }
 
+    /* ── Mode badges ── */
+    .modes {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .mode-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border: 1px solid var(--border2);
+      border-radius: 99px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      background: var(--bg);
+    }
+    .mode-badge span { font-size: 0.9rem; }
+
     .tags {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
       justify-content: center;
-      margin-top: 18px;
+      margin-top: 14px;
     }
     .tag {
       font-family: monospace;
@@ -141,8 +161,8 @@
       font-size: 0.86rem;
       color: #bbb;
     }
-    .status-box.err  { border-color: #C9A090; background: #F9EDE8; color: var(--error); }
-    .status-box.ok   { border-color: #A0C4A0; background: #EDF4ED; color: var(--success); }
+    .status-box.err { border-color: #C9A090; background: #F9EDE8; color: var(--error); }
+    .status-box.ok  { border-color: #A0C4A0; background: #EDF4ED; color: var(--success); }
 
     .spin {
       width: 18px; height: 18px; flex-shrink: 0;
@@ -206,7 +226,7 @@
       border: 1px solid var(--border2);
       color: #aaa;
     }
-    .btn-sec:hover { color: #ddd; border-color: #3a3a55; }
+    .btn-sec:hover { color: var(--text); border-color: var(--border2); }
 
     /* ── Footer ── */
     footer {
@@ -215,63 +235,10 @@
       color: var(--muted);
       text-align: center;
     }
-    footer a { color: var(--accent); text-decoration: none; }
-    footer a:hover { color: var(--accent2); }
     .hi { color: var(--accent); font-weight: 600; }
 
-    /* ── Progress bar inside drop zone ── */
+    /* ── Progress bar ── */
     #prog-bar {
-      position: absolute;
-      bottom: 0; left: 0;
-      height: 3px;
-      width: 0%;
-      background: var(--accent);
-      transition: width .3s ease;
-      border-radius: 0 0 12px 12px;
-    }
-
-    /* ── Section headings ── */
-    .section-heading {
-      width: 100%;
-      max-width: 620px;
-      margin-top: 36px;
-      margin-bottom: 12px;
-    }
-    .section-heading h3 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 2px;
-    }
-    .section-heading p {
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-    .section-number {
-      display: inline-block;
-      width: 22px;
-      height: 22px;
-      line-height: 22px;
-      text-align: center;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #fff;
-      font-size: 0.7rem;
-      font-weight: 700;
-      margin-right: 8px;
-      vertical-align: middle;
-    }
-
-    .card-label {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 14px;
-    }
-
-    #prog-bar-ocr {
       position: absolute;
       bottom: 0; left: 0;
       height: 3px;
@@ -286,44 +253,44 @@
 
 <header>
   <div class="logo">File<em>Forge</em></div>
-  <p class="tagline">Convert files to Markdown · Extract text from images — <span class="hi">private by design</span></p>
+  <p class="tagline">Drop any file — we'll figure out the rest</p>
   <div class="pill">
     <span class="dot"></span>
-    Your file is processed in memory and <span class="hi">never stored</span>
+    Processed in memory · <span class="hi">never stored</span>
   </div>
 </header>
-
-<div class="section-heading">
-  <h3><span class="section-number">1</span> File → Markdown</h3>
-  <p>Convert documents into clean, readable Markdown text</p>
-</div>
 
 <div class="card">
 
   <div id="drop-zone">
     <input type="file" id="file-input" />
     <div id="prog-bar"></div>
-    <div class="icon">📄</div>
+    <div class="icon" id="drop-icon">📂</div>
     <h2>Drop a file or click to browse</h2>
-    <p>Supports <span class="hi">PDF, Word, Excel, PowerPoint</span>, HTML, CSV, JSON, XML, ZIP and more</p>
+    <p>Documents are converted to <span class="hi">Markdown</span> · Images have their text <span class="hi">extracted</span></p>
+    <div class="modes">
+      <div class="mode-badge"><span>📄</span> PDF, Word, Excel, PowerPoint…</div>
+      <div class="mode-badge"><span>📷</span> Photos, screenshots, HEIC…</div>
+    </div>
     <div class="tags">
       <span class="tag">.pdf</span>
       <span class="tag">.docx</span>
       <span class="tag">.pptx</span>
       <span class="tag">.xlsx</span>
-      <span class="tag">.html</span>
       <span class="tag">.csv</span>
-      <span class="tag">.json</span>
-      <span class="tag">.xml</span>
-      <span class="tag">.txt</span>
-      <span class="tag">.zip</span>
+      <span class="tag">.html</span>
+      <span class="tag">.heic</span>
+      <span class="tag">.png</span>
+      <span class="tag">.jpg</span>
+      <span class="tag">.webp</span>
+      <span class="tag">+ more</span>
     </div>
   </div>
 
   <div id="status">
     <div class="status-box" id="status-box">
       <div class="spin" id="spin"></div>
-      <span id="status-text">Converting…</span>
+      <span id="status-text">Processing…</span>
     </div>
   </div>
 
@@ -334,57 +301,9 @@
     </div>
     <pre id="preview"></pre>
     <div class="btns">
-      <button class="btn-dl"  id="btn-dl">⬇ Download .md</button>
+      <button class="btn-dl"  id="btn-dl">⬇ Download</button>
       <button class="btn-sec" id="btn-copy">Copy</button>
       <button class="btn-sec" id="btn-new">New file</button>
-    </div>
-  </div>
-
-</div>
-
-<!-- ── OCR Card ─────────────────────────────────────────────────────── -->
-<div class="section-heading">
-  <h3><span class="section-number">2</span> Image → Text (OCR)</h3>
-  <p>Extract text from photos, screenshots and scanned documents</p>
-</div>
-
-<div class="card">
-
-  <div id="ocr-drop-zone" style="position:relative; border:2px dashed var(--border2); border-radius:12px; padding:52px 24px; text-align:center; cursor:pointer; transition:border-color .18s, background .18s; overflow:hidden;">
-    <input type="file" id="ocr-file-input" accept="image/*,.heic,.heif" style="position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%;" />
-    <div id="prog-bar-ocr"></div>
-    <div class="icon">📷</div>
-    <h2 style="font-size:1rem; font-weight:600; color:var(--text); margin-bottom:5px;">Drop an image or click to browse</h2>
-    <p style="font-size:0.82rem; color:var(--muted);">Extracts text from <span class="hi">photos, screenshots, scanned documents</span></p>
-    <div class="tags">
-      <span class="tag">.heic</span>
-      <span class="tag">.png</span>
-      <span class="tag">.jpg</span>
-      <span class="tag">.jpeg</span>
-      <span class="tag">.webp</span>
-      <span class="tag">.bmp</span>
-      <span class="tag">.tiff</span>
-      <span class="tag">.gif</span>
-    </div>
-  </div>
-
-  <div id="ocr-status" style="display:none; margin-top:18px;">
-    <div class="status-box" id="ocr-status-box">
-      <div class="spin" id="ocr-spin"></div>
-      <span id="ocr-status-text">Reading text…</span>
-    </div>
-  </div>
-
-  <div id="ocr-result" style="display:none; margin-top:20px;">
-    <div class="result-meta">
-      <span class="result-name" id="ocr-r-name">output.txt</span>
-      <span class="result-size" id="ocr-r-size"></span>
-    </div>
-    <pre id="ocr-preview" style="background:#EDE6D8; border:1px solid var(--border); border-radius:8px; padding:16px; font-family:'SF Mono','Fira Code','Cascadia Code',monospace; font-size:0.77rem; line-height:1.65; color:#5C4F42; white-space:pre-wrap; word-break:break-word; max-height:280px; overflow-y:auto;"></pre>
-    <div class="btns">
-      <button class="btn-dl"  id="ocr-btn-dl">⬇ Download .txt</button>
-      <button class="btn-sec" id="ocr-btn-copy">Copy</button>
-      <button class="btn-sec" id="ocr-btn-new">New image</button>
     </div>
   </div>
 
@@ -395,6 +314,10 @@
 </footer>
 
 <script>
+const IMAGE_EXTS = new Set(['.heic','.heif','.png','.jpg','.jpeg','.gif','.bmp','.tiff','.tif','.webp']);
+const DOC_EXTS   = new Set(['.pdf','.docx','.pptx','.xlsx','.html','.htm','.csv','.json','.xml','.txt','.zip','.md']);
+const MAX_SIZE_MB = 50;
+
 const dropZone  = document.getElementById('drop-zone');
 const fileInput = document.getElementById('file-input');
 const statusEl  = document.getElementById('status');
@@ -404,8 +327,9 @@ const spinEl    = document.getElementById('spin');
 const resultEl  = document.getElementById('result');
 const preview   = document.getElementById('preview');
 const progBar   = document.getElementById('prog-bar');
+const dropIcon  = document.getElementById('drop-icon');
 
-let currentMd   = '';
+let currentText = '';
 let currentName = '';
 
 // ── Drag & drop ──────────────────────────────────────────────────────────
@@ -424,9 +348,9 @@ fileInput.addEventListener('change', () => {
 
 // ── Buttons ──────────────────────────────────────────────────────────────
 document.getElementById('btn-dl').addEventListener('click', () => {
-  if (!currentMd) return;
+  if (!currentText) return;
   const a = Object.assign(document.createElement('a'), {
-    href: URL.createObjectURL(new Blob([currentMd], { type: 'text/markdown' })),
+    href: URL.createObjectURL(new Blob([currentText], { type: 'text/plain' })),
     download: currentName
   });
   a.click();
@@ -434,7 +358,7 @@ document.getElementById('btn-dl').addEventListener('click', () => {
 });
 
 document.getElementById('btn-copy').addEventListener('click', async () => {
-  await navigator.clipboard.writeText(currentMd);
+  await navigator.clipboard.writeText(currentText);
   const b = document.getElementById('btn-copy');
   b.textContent = 'Copied!';
   setTimeout(() => b.textContent = 'Copy', 2000);
@@ -451,12 +375,12 @@ function setStatus(msg, type = 'loading') {
   spinEl.style.display  = type === 'loading' ? 'block' : 'none';
 }
 
-function showResult(md, filename) {
+function showResult(text, filename) {
   statusEl.style.display = 'none';
   resultEl.style.display = 'block';
-  preview.textContent = md;
+  preview.textContent = text;
   document.getElementById('r-name').textContent = filename;
-  document.getElementById('r-size').textContent = fmtSize(md.length);
+  document.getElementById('r-size').textContent = fmtSize(text.length);
   progBar.style.width = '0%';
 }
 
@@ -465,7 +389,8 @@ function reset() {
   resultEl.style.display = 'none';
   fileInput.value = '';
   progBar.style.width = '0%';
-  currentMd = ''; currentName = '';
+  dropIcon.textContent = '📂';
+  currentText = ''; currentName = '';
 }
 
 function fmtSize(bytes) {
@@ -474,17 +399,28 @@ function fmtSize(bytes) {
   return (bytes / 1024 / 1024).toFixed(2) + ' MB';
 }
 
-// ── Core conversion ──────────────────────────────────────────────────────
-const MAX_SIZE_MB = 50;
-
+// ── Core ─────────────────────────────────────────────────────────────────
 async function handleFile(file) {
   if (file.size > MAX_SIZE_MB * 1024 * 1024) {
     setStatus(`File too large — max ${MAX_SIZE_MB} MB (this file is ${fmtSize(file.size)}).`, 'err');
     return;
   }
 
+  const ext = '.' + file.name.split('.').pop().toLowerCase();
+  const isImage = IMAGE_EXTS.has(ext);
+  const isDoc   = DOC_EXTS.has(ext);
+
+  if (!isImage && !isDoc) {
+    setStatus(`Unsupported file type "${ext}".`, 'err');
+    return;
+  }
+
+  const endpoint = isImage ? '/api/ocr' : '/api/convert';
+  const label    = isImage ? 'Extracting text from' : 'Converting';
+  dropIcon.textContent = isImage ? '📷' : '📄';
+
   currentName = file.name.replace(/\.[^.]+$/, '') + '.md';
-  setStatus(`Converting "${file.name}"…`);
+  setStatus(`${label} "${file.name}"…`);
   progBar.style.width = '30%';
 
   const form = new FormData();
@@ -492,14 +428,8 @@ async function handleFile(file) {
 
   try {
     progBar.style.width = '60%';
-
-    const res = await fetch('/api/convert', {
-      method: 'POST',
-      body: form
-    });
-
+    const res = await fetch(endpoint, { method: 'POST', body: form });
     progBar.style.width = '90%';
-
     const text = await res.text();
 
     if (!res.ok) {
@@ -508,125 +438,13 @@ async function handleFile(file) {
       return;
     }
 
-    currentMd = text;
+    currentText = text;
     progBar.style.width = '100%';
     setTimeout(() => showResult(text, currentName), 200);
 
   } catch (err) {
     setStatus('Network error: ' + err.message, 'err');
     progBar.style.width = '0%';
-  }
-}
-
-// ── OCR ──────────────────────────────────────────────────────────────────
-const ocrDropZone  = document.getElementById('ocr-drop-zone');
-const ocrFileInput = document.getElementById('ocr-file-input');
-const ocrStatusEl  = document.getElementById('ocr-status');
-const ocrStatusBox = document.getElementById('ocr-status-box');
-const ocrStatusTxt = document.getElementById('ocr-status-text');
-const ocrSpinEl    = document.getElementById('ocr-spin');
-const ocrResultEl  = document.getElementById('ocr-result');
-const ocrPreview   = document.getElementById('ocr-preview');
-const ocrProgBar   = document.getElementById('prog-bar-ocr');
-
-let currentOcrText = '';
-let currentOcrName = '';
-
-ocrDropZone.addEventListener('dragover',  e => { e.preventDefault(); ocrDropZone.style.borderColor = 'var(--accent)'; ocrDropZone.style.background = 'rgba(107,140,107,0.07)'; });
-ocrDropZone.addEventListener('dragleave', () => { ocrDropZone.style.borderColor = ''; ocrDropZone.style.background = ''; });
-ocrDropZone.addEventListener('drop', e => {
-  e.preventDefault();
-  ocrDropZone.style.borderColor = ''; ocrDropZone.style.background = '';
-  const f = e.dataTransfer.files[0];
-  if (f) handleOcrFile(f);
-});
-ocrFileInput.addEventListener('change', () => {
-  const f = ocrFileInput.files[0];
-  if (f) handleOcrFile(f);
-});
-
-document.getElementById('ocr-btn-dl').addEventListener('click', () => {
-  if (!currentOcrText) return;
-  const a = Object.assign(document.createElement('a'), {
-    href: URL.createObjectURL(new Blob([currentOcrText], { type: 'text/plain' })),
-    download: currentOcrName
-  });
-  a.click();
-  URL.revokeObjectURL(a.href);
-});
-
-document.getElementById('ocr-btn-copy').addEventListener('click', async () => {
-  await navigator.clipboard.writeText(currentOcrText);
-  const b = document.getElementById('ocr-btn-copy');
-  b.textContent = 'Copied!';
-  setTimeout(() => b.textContent = 'Copy', 2000);
-});
-
-document.getElementById('ocr-btn-new').addEventListener('click', resetOcr);
-
-function setOcrStatus(msg, type = 'loading') {
-  ocrStatusEl.style.display = 'block';
-  ocrResultEl.style.display = 'none';
-  ocrStatusBox.className = 'status-box' + (type === 'err' ? ' err' : type === 'ok' ? ' ok' : '');
-  ocrStatusTxt.textContent = msg;
-  ocrSpinEl.style.display  = type === 'loading' ? 'block' : 'none';
-}
-
-function showOcrResult(text, filename) {
-  ocrStatusEl.style.display = 'none';
-  ocrResultEl.style.display = 'block';
-  ocrPreview.textContent = text;
-  document.getElementById('ocr-r-name').textContent = filename;
-  document.getElementById('ocr-r-size').textContent = fmtSize(text.length);
-  ocrProgBar.style.width = '0%';
-}
-
-function resetOcr() {
-  ocrStatusEl.style.display = 'none';
-  ocrResultEl.style.display = 'none';
-  ocrFileInput.value = '';
-  ocrProgBar.style.width = '0%';
-  currentOcrText = ''; currentOcrName = '';
-}
-
-async function handleOcrFile(file) {
-  if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-    setOcrStatus(`File too large — max ${MAX_SIZE_MB} MB (this file is ${fmtSize(file.size)}).`, 'err');
-    return;
-  }
-
-  currentOcrName = file.name.replace(/\.[^.]+$/, '') + '.txt';
-  setOcrStatus(`Reading text from "${file.name}"…`);
-  ocrProgBar.style.width = '30%';
-
-  const form = new FormData();
-  form.append('file', file, file.name);
-
-  try {
-    ocrProgBar.style.width = '60%';
-
-    const res = await fetch('/api/ocr', {
-      method: 'POST',
-      body: form
-    });
-
-    ocrProgBar.style.width = '90%';
-
-    const text = await res.text();
-
-    if (!res.ok) {
-      setOcrStatus(text || `Error ${res.status}`, 'err');
-      ocrProgBar.style.width = '0%';
-      return;
-    }
-
-    currentOcrText = text;
-    ocrProgBar.style.width = '100%';
-    setTimeout(() => showOcrResult(text, currentOcrName), 200);
-
-  } catch (err) {
-    setOcrStatus('Network error: ' + err.message, 'err');
-    ocrProgBar.style.width = '0%';
   }
 }
 </script>
