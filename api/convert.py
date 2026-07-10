@@ -1,4 +1,6 @@
 import os
+import glob
+import shutil
 import logging
 import tempfile
 from flask import Flask, request, Response, jsonify
@@ -8,6 +10,23 @@ from markitdown import MarkItDown
 import pytesseract
 from PIL import Image
 from pillow_heif import open_heif
+
+# Tesseract isn't in PATH on Railway (nix store not in runtime PATH),
+# so find it explicitly.
+def _find_tesseract():
+    t = shutil.which("tesseract")
+    if t:
+        return t
+    nix_hits = glob.glob("/nix/store/*/bin/tesseract")
+    if nix_hits:
+        return nix_hits[0]
+    for p in ("/usr/bin/tesseract", "/usr/local/bin/tesseract"):
+        if os.path.exists(p):
+            return p
+    return "tesseract"  # last resort
+
+pytesseract.pytesseract.tesseract_cmd = _find_tesseract()
+logger.info("tesseract cmd: %s", pytesseract.pytesseract.tesseract_cmd)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
