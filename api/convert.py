@@ -202,7 +202,7 @@ def ocr():
     except Exception as exc:
         logger.error("OCR failed for file '%s': %s", file.filename, exc, exc_info=True)
         return Response(
-            "OCR failed. The image may be corrupted or unreadable.",
+            f"OCR failed: {str(exc)}",
             status=500,
             headers=CORS_HEADERS,
         )
