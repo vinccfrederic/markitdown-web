@@ -5,10 +5,9 @@ from flask import Flask, request, Response, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from markitdown import MarkItDown
+import subprocess
 import pytesseract
 from PIL import Image
-from pillow_heif import register_heif_opener
-register_heif_opener()
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -165,12 +164,25 @@ def ocr():
         )
 
     tmp_path = None
+    png_path = None
     try:
         with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as tmp:
             tmp_path = tmp.name
             file.save(tmp)
 
-        image = Image.open(tmp_path)
+        # HEIC/HEIF: convert to PNG via ImageMagick first
+        ocr_path = tmp_path
+        if ext in (".heic", ".heif"):
+            png_path = tmp_path + ".png"
+            result = subprocess.run(
+                ["convert", tmp_path, png_path],
+                capture_output=True, timeout=30
+            )
+            if result.returncode != 0:
+                raise RuntimeError(f"ImageMagick conversion failed: {result.stderr.decode()}")
+            ocr_path = png_path
+
+        image = Image.open(ocr_path)
         text = pytesseract.image_to_string(image)
 
         if not text.strip():
@@ -198,3 +210,5 @@ def ocr():
     finally:
         if tmp_path and os.path.exists(tmp_path):
             os.unlink(tmp_path)
+        if png_path and os.path.exists(png_path):
+            os.unlink(png_path)
