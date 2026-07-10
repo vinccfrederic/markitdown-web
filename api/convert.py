@@ -176,7 +176,7 @@ def ocr():
         if ext in (".heic", ".heif"):
             ffmpeg = shutil.which("ffmpeg")
             if not ffmpeg:
-                raise RuntimeError(f"ffmpeg not found. PATH={os.environ.get('PATH','')}")
+                raise RuntimeError("ffmpeg not available on this server")
             png_path = tmp_path + ".png"
             result = subprocess.run(
                 [ffmpeg, "-y", "-i", tmp_path, png_path],
@@ -206,7 +206,7 @@ def ocr():
     except Exception as exc:
         logger.error("OCR failed for file '%s': %s", file.filename, exc, exc_info=True)
         return Response(
-            f"OCR failed: {str(exc)}",
+            "OCR failed. The image may be corrupted or unreadable.",
             status=500,
             headers=CORS_HEADERS,
         )
