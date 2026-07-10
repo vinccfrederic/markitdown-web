@@ -230,8 +230,37 @@
       border-radius: 0 0 12px 12px;
     }
 
-    /* ── Second card spacing ── */
-    .card + .card { margin-top: 24px; }
+    /* ── Section headings ── */
+    .section-heading {
+      width: 100%;
+      max-width: 620px;
+      margin-top: 36px;
+      margin-bottom: 12px;
+    }
+    .section-heading h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .section-heading p {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .section-number {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      text-align: center;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
 
     .card-label {
       font-size: 0.7rem;
@@ -263,6 +292,11 @@
     Your file is processed in memory and <span class="hi">never stored</span>
   </div>
 </header>
+
+<div class="section-heading">
+  <h3><span class="section-number">1</span> File → Markdown</h3>
+  <p>Convert documents into clean, readable Markdown text</p>
+</div>
 
 <div class="card">
 
@@ -309,9 +343,12 @@
 </div>
 
 <!-- ── OCR Card ─────────────────────────────────────────────────────── -->
-<div class="card">
+<div class="section-heading">
+  <h3><span class="section-number">2</span> Image → Text (OCR)</h3>
+  <p>Extract text from photos, screenshots and scanned documents</p>
+</div>
 
-  <p class="card-label">Image → Text (OCR)</p>
+<div class="card">
 
   <div id="ocr-drop-zone" style="position:relative; border:2px dashed var(--border2); border-radius:12px; padding:52px 24px; text-align:center; cursor:pointer; transition:border-color .18s, background .18s; overflow:hidden;">
     <input type="file" id="ocr-file-input" accept="image/*" style="position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%;" />
