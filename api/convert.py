@@ -5,6 +5,8 @@ from flask import Flask, request, Response, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from markitdown import MarkItDown
+import pytesseract
+from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -34,6 +36,10 @@ ALLOWED_EXTENSIONS = {
     ".pdf", ".docx", ".pptx", ".xlsx",
     ".html", ".htm", ".csv", ".json",
     ".xml", ".txt", ".zip", ".md",
+}
+
+ALLOWED_IMAGE_EXTENSIONS = {
+    ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".tif", ".webp",
 }
 
 
@@ -122,5 +128,70 @@ def convert():
 
     finally:
         # Always delete the temp file — nothing persists
+        if tmp_path and os.path.exists(tmp_path):
+            os.unlink(tmp_path)
+
+
+@app.route("/api/ocr", methods=["POST", "OPTIONS"])
+@limiter.limit("10 per minute", error_message="Too many requests — please wait a moment before trying again.")
+def ocr():
+    if request.method == "OPTIONS":
+        return Response("", status=204, headers=CORS_HEADERS)
+
+    file = request.files.get("file")
+    if not file or not file.filename:
+        return Response("No file provided.", status=400, headers=CORS_HEADERS)
+
+    # Check size
+    file.seek(0, 2)
+    size = file.tell()
+    file.seek(0)
+    if size > MAX_SIZE_BYTES:
+        return Response(
+            f"File too large (max {MAX_SIZE_MB} MB).", status=413, headers=CORS_HEADERS
+        )
+
+    _, ext = os.path.splitext(file.filename)
+    ext = ext.lower()
+
+    if not ext or ext not in ALLOWED_IMAGE_EXTENSIONS:
+        return Response(
+            f"Unsupported image type '{ext or '(none)'}'. Allowed: {', '.join(sorted(ALLOWED_IMAGE_EXTENSIONS))}",
+            status=415,
+            headers=CORS_HEADERS,
+        )
+
+    tmp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as tmp:
+            tmp_path = tmp.name
+            file.save(tmp)
+
+        image = Image.open(tmp_path)
+        text = pytesseract.image_to_string(image)
+
+        if not text.strip():
+            return Response(
+                "No text detected in the image.",
+                status=422,
+                headers=CORS_HEADERS,
+            )
+
+        return Response(
+            text,
+            status=200,
+            mimetype="text/plain; charset=utf-8",
+            headers=CORS_HEADERS,
+        )
+
+    except Exception as exc:
+        logger.error("OCR failed for file '%s': %s", file.filename, exc, exc_info=True)
+        return Response(
+            "OCR failed. The image may be corrupted or unreadable.",
+            status=500,
+            headers=CORS_HEADERS,
+        )
+
+    finally:
         if tmp_path and os.path.exists(tmp_path):
             os.unlink(tmp_path)
