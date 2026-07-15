@@ -8,11 +8,30 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from markitdown import MarkItDown
 import pytesseract
-from PIL import Image
+from PIL import Image, ImageEnhance, ImageFilter
 from pillow_heif import open_heif
 
 # Tesseract isn't in PATH on Railway (nix store not in runtime PATH),
 # so find it explicitly.
+def _preprocess_for_ocr(image):
+    """Grayscale + upscale + sharpen + contrast — improves OCR on complex images."""
+    # Convert to RGB first if needed, then grayscale
+    if image.mode not in ("RGB", "L"):
+        image = image.convert("RGB")
+    image = image.convert("L")
+    # Upscale small images to at least 2000px wide for better OCR
+    if image.width < 2000:
+        scale = 2000 / image.width
+        image = image.resize(
+            (int(image.width * scale), int(image.height * scale)),
+            Image.LANCZOS,
+        )
+    # Sharpen then boost contrast
+    image = image.filter(ImageFilter.SHARPEN)
+    image = ImageEnhance.Contrast(image).enhance(1.5)
+    return image
+
+
 def _find_tesseract():
     t = shutil.which("tesseract")
     if t:
@@ -150,6 +169,29 @@ def convert():
             os.unlink(tmp_path)
 
 
+@app.route("/api/url", methods=["POST", "OPTIONS"])
+@limiter.limit("10 per minute", error_message="Too many requests — please wait a moment.")
+def convert_url():
+    if request.method == "OPTIONS":
+        return Response("", status=204, headers=CORS_HEADERS)
+
+    url = request.form.get("url", "").strip()
+    if not url:
+        return Response("No URL provided.", status=400, headers=CORS_HEADERS)
+    if not url.startswith(("http://", "https://")):
+        return Response("Invalid URL — must start with http:// or https://", status=400, headers=CORS_HEADERS)
+
+    try:
+        result = md.convert(url)
+        md_text = result.text_content or ""
+        if not md_text.strip():
+            return Response("Could not extract content from that URL.", status=422, headers=CORS_HEADERS)
+        return Response(md_text, status=200, mimetype="text/plain; charset=utf-8", headers=CORS_HEADERS)
+    except Exception as exc:
+        logger.error("URL conversion failed for '%s': %s", url, exc, exc_info=True)
+        return Response(f"URL conversion failed: {str(exc)}", status=500, headers=CORS_HEADERS)
+
+
 @app.route("/api/ocr", methods=["POST", "OPTIONS"])
 @limiter.limit("10 per minute", error_message="Too many requests — please wait a moment before trying again.")
 def ocr():
@@ -191,7 +233,13 @@ def ocr():
             image = heif_file.to_pillow()
         else:
             image = Image.open(tmp_path)
-        text = pytesseract.image_to_string(image)
+
+        image = _preprocess_for_ocr(image)
+        text = pytesseract.image_to_string(
+            image,
+            config="--oem 3 --psm 1",
+            lang="eng+fra",
+        )
 
         if not text.strip():
             return Response(
