@@ -8,27 +8,39 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from markitdown import MarkItDown
 import pytesseract
-from PIL import Image, ImageEnhance, ImageFilter
+from PIL import Image, ImageEnhance, ImageFilter, ImageOps
 from pillow_heif import open_heif
 
 # Tesseract isn't in PATH on Railway (nix store not in runtime PATH),
 # so find it explicitly.
 def _preprocess_for_ocr(image):
-    """Grayscale + upscale + sharpen + contrast — improves OCR on complex images."""
-    # Convert to RGB first if needed, then grayscale
-    if image.mode not in ("RGB", "L"):
+    """Preprocess image for OCR — handles designer templates, transparent PNGs, varied backgrounds."""
+    # Composite RGBA onto white background (design templates are often transparent PNGs)
+    if image.mode == "RGBA":
+        bg = Image.new("RGB", image.size, (255, 255, 255))
+        bg.paste(image, mask=image.split()[3])
+        image = bg
+    elif image.mode not in ("RGB", "L"):
         image = image.convert("RGB")
-    image = image.convert("L")
-    # Upscale small images to at least 2000px wide for better OCR
+
+    # Upscale to at least 2000px wide for better OCR on small/fine text
     if image.width < 2000:
         scale = 2000 / image.width
         image = image.resize(
             (int(image.width * scale), int(image.height * scale)),
             Image.LANCZOS,
         )
-    # Sharpen then boost contrast
-    image = image.filter(ImageFilter.SHARPEN)
-    image = ImageEnhance.Contrast(image).enhance(1.5)
+
+    # Convert to grayscale
+    image = image.convert("L")
+
+    # Adaptive autocontrast: stretches histogram based on actual image content
+    # (better than fixed 1.5x for images with varied backgrounds/lighting)
+    image = ImageOps.autocontrast(image, cutoff=2)
+
+    # Unsharp mask: preserves thin/decorative font edges better than SHARPEN
+    image = image.filter(ImageFilter.UnsharpMask(radius=1, percent=150, threshold=3))
+
     return image
 
 
@@ -237,7 +249,7 @@ def ocr():
         image = _preprocess_for_ocr(image)
         text = pytesseract.image_to_string(
             image,
-            config="--oem 3 --psm 1",
+            config="--oem 3 --psm 1 --dpi 150",
             lang="eng+fra",
         )
 
